@@ -8,6 +8,7 @@ class Table(db.Model):
     order  = db.Column (db.Integer(), nullable = False) # НОМЕР ЗАКАЗА
     dollar  = db.Column (db.Integer(), nullable = False) # СТОИМОСТЬ В ДОЛЛАРАХ
     supply  = db.Column (db.Integer(), nullable = False) # СРОКИ ПОСТАВКИ
+    
     def __init__(self, order, dollar, supply):
         self.order = order
         self.dollar = dollar
