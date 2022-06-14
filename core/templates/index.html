@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div class="container">
+    <h2>Автобусы</h2>
+    <input id="myInput" type="text" placeholder="Найти..">
+    <br>         
+    <table class="table table-bordered table-striped table_sort">
+                <thead>
+                    <tr>
+                        <th class="sort">id</th>
+                        <th class="sort">Номер заказа</th>
+                        <th class="sort">Стоимость $</th>
+                        <th class="sort">Стоимость ₽</th>
+                        <th class="sort">Срок поставки</th>
+                    </tr>
+                </thead>
+                <tbody id="myTable">
+                {% for value in values.items %}
+                <tr>
+                    <th>{{value.id}}</th>
+                    <th>{{wel.title}}</th>
+                    <td>{{wel.date}}</td>
+                    <td>{{wel.quantity}}</td>
+                    <td>{{wel.distance}}</td>
+                {% endfor %}
+                </tr>
+            </tbody>
+    </table>
+  </div>
+
+
+
+{% endblock %}
