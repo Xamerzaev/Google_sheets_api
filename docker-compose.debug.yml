@@ -11,4 +11,4 @@ services:
       - 5002:5002
       - 5678:5678
     environment:
-      - FLASK_APP=run.py
+      - FLASK_APP=env/lib/python3.8/site-packages/flask/app.py

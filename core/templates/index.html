@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<script src="https://www.cbr-xml-daily.ru/money.js"></script>
 
     <div class="container">
     <h2>Автобусы</h2>
@@ -19,10 +20,10 @@
                 {% for value in values.items %}
                 <tr>
                     <th>{{value.id}}</th>
-                    <th>{{wel.title}}</th>
-                    <td>{{wel.date}}</td>
-                    <td>{{wel.quantity}}</td>
-                    <td>{{wel.distance}}</td>
+                    <th>{{value.order}}</th>
+                    <td>{{value.dollar}}</td>
+                    <td>fx({{value.dollar}}).from("USD").to("RUB");</td>
+                    <td>{{value.supply}}</td>
                 {% endfor %}
                 </tr>
             </tbody>

@@ -1,3 +1,4 @@
+from datetime import date, datetime
 from pprint import pprint
 
 import httplib2
@@ -42,6 +43,7 @@ supply = service.spreadsheets().values().get(
     range='D2:D51',
     majorDimension='COLUMNS'
 ).execute()
+
 
 def add_values_to_db(order, dollar, supply):
 
