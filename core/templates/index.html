@@ -1,10 +1,8 @@
 {% extends 'base.html' %}
 {% block content %}
-<script src="https://www.cbr-xml-daily.ru/money.js"></script>
-
     <div class="container">
-    <h2>Автобусы</h2>
-    <input id="myInput" type="text" placeholder="Найти..">
+    <h2>google_sheets_api</h2>
+    <input id="myInput" type="text" placeholder="Номер заказа..">
     <br>         
     <table class="table table-bordered table-striped table_sort">
                 <thead>
@@ -17,19 +15,37 @@
                     </tr>
                 </thead>
                 <tbody id="myTable">
-                {% for value in values.items %}
+                {% for value in posts.items %}
                 <tr>
                     <th>{{value.id}}</th>
                     <th>{{value.order}}</th>
                     <td>{{value.dollar}}</td>
-                    <td>fx({{value.dollar}}).from("USD").to("RUB");</td>
+                    <td>{{ruble}}</td>
                     <td>{{value.supply}}</td>
                 {% endfor %}
+
                 </tr>
             </tbody>
+            
     </table>
   </div>
+  
+  <div class="container">
+    {% for page_num in posts.iter_pages(left_edge=1, right_edge=2, left_current=2, right_current=2) %}
+          {% if page_num %}
+              {% if page_num == posts.page %}
+        <ul class="pagination">
+          <li><a href="{{url_for('index', page=page_num)}}"> {{ page_num }} </a></li>
+     </ul>
+        {% else %} 
+        <ul class="pagination">
+          <li><a href="{{url_for('index', page=page_num)}}"> {{ page_num }} </a></li>
+          {% endif %}    
+          {% else %}
+          ...
+          {% endif %}
+      {% endfor %} 
+</div>
 
-
-
+  <script src="https://www.cbr-xml-daily.ru/money.js"></script>
 {% endblock %}

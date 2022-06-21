@@ -22,38 +22,27 @@ httpAuth = credentials.authorize(httplib2.Http())
 service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
 
 
-# чтение order файла
-order = service.spreadsheets().values().get(
+# чтение файла
+valuess = service.spreadsheets().values().get(
     spreadsheetId=spreadsheet_id,
-    range='B2:B51',
-    majorDimension='COLUMNS'
+    range='B2:D51',
+    majorDimension='ROWS'
 ).execute()
 
 
-# чтение dollar файла
-dollar = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='C2:C51',
-    majorDimension='COLUMNS'
-).execute()
-
-# чтение supply файла
-supply = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='D2:D51',
-    majorDimension='COLUMNS'
-).execute()
-
-
-def add_values_to_db(order, dollar, supply):
+def add_values_to_db():
 
     """   
     Функция заполнения данными  БД     
     
     """
+    for i in valuess['values']:
+        order = i[0]
+        dollar = i[1]
+        supply = i[2]
+        supply = datetime.strptime(supply, "%d.%m.%Y")
+        values = Table(order=order, dollar=dollar, supply=supply)
+        db.session.add(values)
+        db.session.commit()
 
-    values = Table(order, dollar, supply)
-    db.session.add(values)
-    db.session.commit()
-
-add_values_to_db(order, dollar, supply)
+add_values_to_db()
