@@ -14,4 +14,4 @@ def index(dollar):
 
 def telegram(supply):
     if datetime.datetime.now() > Table.query.get(supply):
-        
+        pass
