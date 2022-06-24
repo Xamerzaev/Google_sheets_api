@@ -25,7 +25,7 @@ service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
 # чтение файла
 valuess = service.spreadsheets().values().get(
     spreadsheetId=spreadsheet_id,
-    range='B2:D51',
+    range='B2:D999',
     majorDimension='ROWS'
 ).execute()
 
