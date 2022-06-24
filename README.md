@@ -1,5 +1,6 @@
 ### Ссылка на GoogleSheets документ.
 - https://docs.google.com/spreadsheets/d/1bgtvoIrVUw1WTJXzBGKzuCVXQ3ECASkqMBvyxv4wZR8/edit?usp=sharing
+- Для получения доступа к документа пишите мне в телегу (@mahamerz)
 
 ### Python
 

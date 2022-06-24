@@ -1,11 +1,12 @@
 from core import db
 
+#модель таблицы
 class Table(db.Model):
     __tablename__ = 'tables'
     id = db.Column (db.Integer(), primary_key=True) #ИД столбца
     order  = db.Column (db.Integer(), nullable = False) # НОМЕР ЗАКАЗА
     dollar  = db.Column (db.Integer(), nullable = False) # СТОИМОСТЬ В ДОЛЛАРАХ
-    supply  = db.Column (db.DateTime(), nullable = False) # СРОКИ ПОСТАВКИ
+    supply  = db.Column (db.Date(), nullable = False) # СРОКИ ПОСТАВКИ
 
     def __init__(self, order, dollar, supply):
         self.order = order

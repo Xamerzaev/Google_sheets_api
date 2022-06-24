@@ -1,16 +1,34 @@
 from flask import render_template, request
 import datetime
+
+from requests import session
 from core import app
 from core.models import db, Table
 from core.convert import usd_rate
 
+
+
 @app.route('/')
-def index(dollar):
-    dollarr = Table.query.get(dollar)
-    ruble = float(dollarr) * usd_rate
-    page = request.args.get('page', 1, type=int)
-    posts = Table.query.paginate(page=page, per_page=50)
-    return render_template('index.html', posts=posts, ruble=ruble)
+def index():
+
+    table = Table.query.all()
+    ruble = []
+    
+    #получаем доллар из таблицы
+    dollar = db.session.query(Table.dollar)
+    dollars = dollar.all()
+    
+    # конвертируем доллар в рубль      
+    for i in dollars:
+        ruble.append(int(i[0]) * usd_rate) #usd_rate - курс рубля
+
+    items = [{"id": table[i].id, "order": table[i].order, 
+            "dollar": table[i].dollar, "supply": table[i].supply, 
+            "ruble": ruble[i]} for i in range(len(dollars))]
+
+    data = {"items": items}
+    return render_template('index.html',
+                            context=items)
 
 def telegram(supply):
     if datetime.datetime.now() > Table.query.get(supply):
