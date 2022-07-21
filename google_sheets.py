@@ -41,4 +41,5 @@ def add_values_to_db():
         db.session.add(values)
         db.session.commit()
 
+
 add_values_to_db()
