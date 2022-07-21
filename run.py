@@ -1,4 +1,3 @@
-from sqlalchemy import true
 from core import app
 
 if __name__ == '__main__':

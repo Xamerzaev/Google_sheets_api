@@ -1,5 +1,4 @@
-from datetime import date, datetime
-from pprint import pprint
+from datetime import datetime
 
 import httplib2
 import apiclient.discovery
@@ -19,7 +18,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
     ['https://www.googleapis.com/auth/spreadsheets',
      'https://www.googleapis.com/auth/drive'])
 httpAuth = credentials.authorize(httplib2.Http())
-service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
+service = apiclient.discovery.build('sheets', 'v4', http=httpAuth)
 
 
 # чтение файла
@@ -29,13 +28,10 @@ valuess = service.spreadsheets().values().get(
     majorDimension='ROWS'
 ).execute()
 
+# сохраняем данные в дб
+
 
 def add_values_to_db():
-
-    """   
-    Функция заполнения данными  БД     
-    
-    """
     for i in valuess['values']:
         order = i[0]
         dollar = i[1]
@@ -44,5 +40,6 @@ def add_values_to_db():
         values = Table(order=order, dollar=dollar, supply=supply)
         db.session.add(values)
         db.session.commit()
+
 
 add_values_to_db()
