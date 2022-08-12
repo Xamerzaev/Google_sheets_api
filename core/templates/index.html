@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+    <h2>Google_Sheets_Api</h2>
+    <input id="myInput" type="text" placeholder="Номер заказа..">
+    <br>         
+    <table class="table table-bordered table-striped table_sort">
+                <thead>
+                    <tr>
+                        <th class="sort">id</th>
+                        <th class="sort">Номер заказа</th>
+                        <th class="sort">Стоимость $</th>
+                        <th class="sort">Срок поставки</th>
+                        <th class="sort">Стоимость ₽</th>
+                    </tr>
+                </thead>                
+                <tbody id="myTable">
+                {% for item in context %}
+                <tr>  
+                    <th>{{item.id}}</th>
+                    <td>{{item.order}}</td>
+                    <td>{{item.dollar}}</td>
+                    <td>{{item.supply}}</td>                   
+                    <td>{{item.ruble}}</td>
+                  </tr>
+               {% endfor %}
+            </tbody>
+    </table>
+  </div>
+
+{% endblock %}
