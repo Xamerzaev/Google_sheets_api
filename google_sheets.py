@@ -1,8 +1,8 @@
 import os
+from dotenv import load_dotenv
 from datetime import datetime
 
 from oauth2client.service_account import ServiceAccountCredentials
-from dotenv import load_dotenv
 import httplib2
 import apiclient.discovery
 
