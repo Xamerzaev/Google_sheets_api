@@ -1,45 +1,82 @@
+import os
 from datetime import datetime
 
+from oauth2client.service_account import ServiceAccountCredentials
+from dotenv import load_dotenv
 import httplib2
 import apiclient.discovery
-from oauth2client.service_account import ServiceAccountCredentials
 
 from core.models import Table
 from core import db
 
-# Файл, полученный в Google Developer Console
-CREDENTIALS_FILE = 'creds.json'
-# ID Google Sheets документа (можно взять из его URL)
-spreadsheet_id = '1bgtvoIrVUw1WTJXzBGKzuCVXQ3ECASkqMBvyxv4wZR8'
-
-# Авторизуемся и получаем service — экземпляр доступа к API
-credentials = ServiceAccountCredentials.from_json_keyfile_name(
-    CREDENTIALS_FILE,
-    ['https://www.googleapis.com/auth/spreadsheets',
-     'https://www.googleapis.com/auth/drive'])
-httpAuth = credentials.authorize(httplib2.Http())
-service = apiclient.discovery.build('sheets', 'v4', http=httpAuth)
+load_dotenv()
 
 
-# чтение файла
-valuess = service.spreadsheets().values().get(
-    spreadsheetId=spreadsheet_id,
-    range='B2:D999',
-    majorDimension='ROWS'
-).execute()
-
-# сохраняем данные в дб
-
-
-def add_values_to_db():
-    for i in valuess['values']:
-        order = i[0]
-        dollar = i[1]
-        supply = i[2]
-        supply = datetime.strptime(supply, "%d.%m.%Y")
-        values = Table(order=order, dollar=dollar, supply=supply)
-        db.session.add(values)
-        db.session.commit()
+class GoogleSheetsConfig:
+    credentials_file = os.getenv("CREDENTIALS_FILE")
+    spreadsheet_id = os.getenv("SPREADSHEET_ID")
+    scopes = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ]
 
 
-add_values_to_db()
+def get_google_sheets_service(config, http_auth=None):
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(
+        config.credentials_file, config.scopes
+    )
+    http_auth = http_auth or credentials.authorize(httplib2.Http())
+    return apiclient.discovery.build("sheets", "v4", http=http_auth)
+
+
+def read_google_sheets_data(service, range_="B2:D999", major_dimension="ROWS"):
+    try:
+        values = (
+            service.spreadsheets()
+            .values()
+            .get(
+                spreadsheetId=GoogleSheetsConfig.spreadsheet_id,
+                range=range_,
+                majorDimension=major_dimension,
+            )
+            .execute()
+        )
+        return values.get("values", [])
+    except Exception as e:
+        print(f"Error reading Google Sheets data: {e}")
+        return []
+
+
+def add_values_to_db(session, data):
+    for row in data:
+        try:
+            order, dollar, supply_str = row
+            supply = datetime.strptime(supply_str, "%d.%m.%Y")
+            values = Table(order=order, dollar=dollar, supply=supply)
+            session.add(values)
+        except ValueError as ve:
+            print(f"Error parsing data: {ve}")
+    try:
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        print(f"Error committing to the database: {e}")
+
+
+def main():
+    config = GoogleSheetsConfig()
+    try:
+        # Авторизация и получение сервиса для работы с Google Sheets API
+        service = get_google_sheets_service(config)
+
+        # Чтение данных из файла Google Sheets
+        values = read_google_sheets_data(service)
+
+        # Сохранение данных в базу данных
+        add_values_to_db(db.session, values)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+if __name__ == "__main__":
+    main()
