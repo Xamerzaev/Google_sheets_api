@@ -1,6 +1,5 @@
 version: '3.7'
 
-
 services:
     web:
         build: .
@@ -10,5 +9,12 @@ services:
             - .:/code
         depends_on:
             - redis
+        networks:
+            - my_network
     redis:
         image: redis
+        networks:
+            - my_network
+
+networks:
+    my_network:

@@ -1,33 +1,48 @@
-from flask import render_template
 import datetime
 
+from flask import render_template
+from flask import current_app
+
 from core import app
-from core.models import db, Table
+from core.models import Table
 from core.convert import usd_rate
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    # получаем все данные с таблицы
-    table = Table.query.all()
-    # список с рублями
-    ruble = []
+    table_entries = Table.query.all()
+    rubles = [int(entry.dollar) * int(usd_rate) for entry in table_entries]
+    items = [
+        {
+            "id": entry.id,
+            "order": entry.order,
+            "dollar": entry.dollar,
+            "supply": entry.supply,
+            "ruble": ruble,
+        }
+        for entry, ruble in zip(table_entries, rubles)
+    ]
 
-    # получаем доллар из таблицы
-    dollar = db.session.query(Table.dollar)
-    dollars = dollar.all()
-
-    # конвертируем доллар в рубль
-    for i in dollars:
-        ruble.append(int(i[0]) * int(usd_rate))  # usd_rate - курс рубля
-
-    items = [{"id": table[i].id, "order": table[i].order,
-              "dollar": table[i].dollar, "supply": table[i].supply,
-              "ruble": ruble[i]} for i in range(len(dollars))]
-    return render_template('index.html',
-                           context=items)
+    return render_template("index.html", context=items)
 
 
 def telegram(supply):
-    if datetime.datetime.now() > Table.query.get(supply):
-        pass
+    current_time = datetime.datetime.utcnow()
+    table_entry = Table.query.get(supply)
+
+    if table_entry and current_time > table_entry.supply:
+        send_telegram_notification(
+            f"Supply time exceeded for order {table_entry.order}"
+        )
+    else:
+        if table_entry is None:
+            current_app.logger.warning(f"Table entry with supply {supply} not found.")
+        else:
+            current_app.logger.info(
+                f"Supply time has not been reached for order {table_entry.order}."
+            )
+
+
+def send_telegram_notification(message):
+    # код для отправки уведомления в телеграмм
+    print(f"Telegram notification: {message}")
