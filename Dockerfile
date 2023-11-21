@@ -3,4 +3,9 @@ FROM python:3.7
 ADD . /code
 WORKDIR /code
 RUN pip install -r requirements.txt
-CMD python run.py
+
+COPY entrypoint.sh /code/entrypoint.sh
+
+RUN chmod +x /code/entrypoint.sh
+
+CMD ["/code/entrypoint.sh"]

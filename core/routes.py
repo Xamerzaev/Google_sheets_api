@@ -5,11 +5,12 @@ from flask import current_app
 
 from core import app
 from core.models import Table
-from core.convert import usd_rate
+from core.convert import get_usd_rate
 
 
 @app.route("/")
 def index():
+    usd_rate = get_usd_rate()
     table_entries = Table.query.all()
     rubles = [int(entry.dollar) * int(usd_rate) for entry in table_entries]
     items = [
